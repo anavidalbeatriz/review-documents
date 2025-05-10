@@ -2,3 +2,7 @@ langchain
 langchain-google-genai
 pydantic
 python-docx
+google-cloud
+google-api-core
+google-cloud-aiplatform
+dotenv

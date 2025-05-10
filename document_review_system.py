@@ -1,12 +1,12 @@
 from typing import List, Dict, Any
 from pydantic import BaseModel
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.schema import HumanMessage
 import docx
 import os
 import json
 import sys
 from dotenv import load_dotenv
+from google.cloud import aiplatform
+from google.api_core import exceptions
 
 # Load environment variables from .env
 load_dotenv()
@@ -45,44 +45,50 @@ def apply_static_rule(rule: Rule, text: str) -> Dict[str, Any]:
         "suggestion": "Expand the document." if not passed else ""
     }
 
-# 5. LLM rule processor using LangChain (Gemini)
-def apply_llm_rule(rule: Rule, text: str, llm) -> Dict[str, Any]:
-    prompt = f"{rule.llm_prompt}\n\nDocument Content:\n{text}"
-    response = llm([HumanMessage(content=prompt)])
-    return {
-        "rule_id": rule.rule_id,
-        "category": rule.category,
-        "status": "review",
-        "message": response.content,
-        "suggestion": "Review LLM feedback."
-    }
+# 5. LLM rule processor using Vertex AI (Generative AI Model)
+def apply_llm_rule(rule: Rule, text: str) -> Dict[str, Any]:
+    # Initialize Vertex AI client
+    try:
+        # Get environment variables for Vertex AI setup
+        project_id = os.getenv("GCP_PROJECT_ID")
+        region = os.getenv("GCP_REGION", "us-central1")
+        vertex_model_id = os.getenv("VERTEX_AI_MODEL_ID")  # The generative model's ID
+        
+        # Initialize the AI platform client
+        aiplatform.init(project=project_id, location=region)
+
+        # Prepare the prompt for the generative model
+        prompt = f"{rule.llm_prompt}\n\nDocument Content:\n{text}"
+
+        # Call Vertex AI's generative model
+        model = aiplatform.Model(vertex_model_id)
+        response = model.predict([prompt])
+
+        return {
+            "rule_id": rule.rule_id,
+            "category": rule.category,
+            "status": "review",
+            "message": response.predictions[0],  # Assuming the first prediction is the model's response
+            "suggestion": "Review the LLM feedback."
+        }
+    except exceptions.GoogleAPICallError as e:
+        return {
+            "rule_id": rule.rule_id,
+            "category": rule.category,
+            "status": "error",
+            "message": f"Error with Vertex AI: {e}",
+            "suggestion": "Check your API settings or model availability."
+        }
 
 # 6. Main review engine
 def review_document_text(text: str, rules: List[Rule]) -> List[Dict[str, Any]]:
     results = []
     
-    # Fetch LLM configurations from environment variables
-    llm_model = os.getenv("LLM_MODEL", "gemini-pro")
-    llm_temperature = float(os.getenv("LLM_TEMPERATURE", 0.2))
-    
-    # Fetch the API key from environment variable
-    genie_api_key = os.getenv("GENIE_API_KEY")
-    
-    if not genie_api_key:
-        raise ValueError("GENIE_API_KEY is missing in the .env file")
-
-    # Initialize LangChain LLM using environment settings and API key
-    llm = ChatGoogleGenerativeAI(
-        model=llm_model, 
-        temperature=llm_temperature, 
-        api_key=genie_api_key  # Passing the API key here
-    )
-
     for rule in rules:
         if rule.type == "static_length_check":
             result = apply_static_rule(rule, text)
         elif rule.type == "llm_check":
-            result = apply_llm_rule(rule, text, llm)
+            result = apply_llm_rule(rule, text)
         else:
             result = {
                 "rule_id": rule.rule_id,
