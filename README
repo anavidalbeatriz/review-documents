@@ -1,0 +1,63 @@
+# Document Review System
+
+A Python-based system that analyzes and reviews documents based on a set of customizable rules. This system uses the Gemini LLM model via LangChain for more advanced reviews, including clarity and cohesion checks.
+
+## Features
+
+- **Rule-based Document Review**: Supports static length checks and LLM-based checks for different categories such as clarity, cohesion, etc.
+- **Extensibility**: Add and modify rules via a JSON file.
+- **Easy Integration**: Works with Google Gemini LLM via LangChain for powerful text analysis.
+- **Environment Variable Support**: Sensitive data like API keys are loaded from a `.env` file for better security.
+
+## Installation
+
+Follow these steps to get the project running on your local machine.
+
+### Prerequisites
+
+- Python 3.7+
+- `pip` (Python's package installer)
+
+### 1. Clone the repository
+
+```bash
+git clone 
+cd document-review-system
+
+### 2. Install requirements
+
+pip install -r requirements.txt
+
+### 3. Set up your .env file
+
+GEMINI_API_KEY=your_gemini_api_key_here
+LLM_MODEL=gemini-pro
+LLM_TEMPERATURE=0.2
+RULES_JSON_PATH=path_to_your_rules.json
+
+### 4. Usage
+
+python document_review_system.py <rules.json> "<text_to_analyze>"
+
+## Example:
+
+python document_review_system.py rules.json "The quick brown fox jumps over the lazy dog."
+
+### 5. Output
+
+Rule: min_word_count
+Category: clarity
+Status: fail
+Message: 9 words found. Minimum required is 500.
+Suggestion: Expand the document.
+
+### 6. Contributing
+Fork the repository
+
+Create a feature branch
+
+Commit your changes
+
+Push to the branch
+
+Open a pull request

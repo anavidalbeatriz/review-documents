@@ -1,0 +1,52 @@
+[
+    {
+      "rule_id": "R001",
+      "description": "Character must include a selected race.",
+      "type": "llm_check",
+      "category": "character_race",
+      "llm_prompt": "Check if the character description clearly states a chosen race (e.g., Elf, Human, Dwarf, etc.). If not, respond 'Missing race.'"
+    },
+    {
+      "rule_id": "R002",
+      "description": "Character must include a selected class from the official 5e list.",
+      "type": "llm_check",
+      "category": "class_selection",
+      "llm_prompt": "Does the character specify a class from the official Dungeons & Dragons 5th edition list? Valid classes are: Artificer, Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard. Respond 'Invalid class' if it's not one of these."
+    },
+    {
+      "rule_id": "R003",
+      "description": "Character must include alignment.",
+      "type": "llm_check",
+      "category": "alignment",
+      "llm_prompt": "Check if the alignment of the character is mentioned (e.g., Lawful Good, Chaotic Neutral). If not, respond 'Missing alignment.'"
+    },
+    {
+      "rule_id": "R004",
+      "description": "Character must define ability scores between 3 and 18.",
+      "type": "llm_check",
+      "category": "ability_scores",
+      "llm_prompt": "Verify that the six ability scores (STR, DEX, CON, INT, WIS, CHA) are present and each has a value between 3 and 18. Respond 'Invalid scores' if any are missing or outside this range."
+    },
+    {
+      "rule_id": "R005",
+      "description": "Character must include background and personality traits.",
+      "type": "llm_check",
+      "category": "background",
+      "llm_prompt": "Check if the character background and personality traits (such as bonds, flaws, ideals) are described."
+    },
+    {
+      "rule_id": "R006",
+      "description": "Character description must be at least 200 words.",
+      "type": "static_length_check",
+      "category": "length_requirement",
+      "min_words": 200
+    },
+    {
+       "rule_id": "R007",
+       "description": "Character must belong to a valid 5e race.",
+       "type": "llm_check",
+       "category": "character_race",
+       "llm_prompt": "Check if the character's race is one of the official Dungeons & Dragons 5e races: Dragonborn, Dwarf, Elf, Gnome, Half-Elf, Half-Orc, Halfling, Human, Tiefling, Aasimar, Firbolg, Goblin, Goliath, Kenku, Tabaxi, Triton, Yuan-ti. If not, respond 'Invalid race'."
+      }   
+  ]
+  
