@@ -1,5 +1,6 @@
 # Ignore .env file containing sensitive information
 .env
-google-key
+google-key.json
+# Ignore Python cache files
 env
 venv
